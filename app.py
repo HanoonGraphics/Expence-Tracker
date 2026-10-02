@@ -4,23 +4,21 @@ import pandas as pd
 # Page Configuration
 st.set_page_config(page_title="Expense Tracker", page_icon="📊", layout="wide")
 
-# Google Sheet CSV Link
-SHEET_ID = "1rHNLc_oNVJD4hrKS179aZ0sq2eZm-BQ2MJ5dEKgb7ao"
-SHEET_NAME = "Transactions"
-CSV_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}"
-
 st.title("📊 Financial Dashboard & Expense Tracker")
 
-# Function to load data from Google Sheets
-@st.cache_data(ttl=5) # 5 സെക്കൻഡിൽ സ്വയം അപ്‌ഡേറ്റ് ചെയ്യും
+# Google Sheet Direct Export Link
+sheet_url = "https://docs.google.com/spreadsheets/d/1rHNLc_oNVJD4hrKS179aZ0sq2eZm-BQ2MJ5dEKgb7ao/export?format=csv"
+
+@st.cache_data(ttl=2)
 def load_data():
     try:
-        df = pd.read_csv(CSV_URL)
-        return df
+        # direct csv load
+        data = pd.read_csv(sheet_url)
+        return data
     except Exception as e:
+        st.error(f"Error loading sheet: {e}")
         return pd.DataFrame()
 
-# Data load ചെയ്യുന്നു
 df = load_data()
 
 # Navigation menu
@@ -32,6 +30,4 @@ if menu == "Monthly Tracker":
     if not df.empty:
         st.dataframe(df, use_container_width=True)
     else:
-        st.warning("Google Sheet-ൽ നിന്ന് ഡാറ്റ കാണാൻ സാധിക്കുന്നില്ല. ഷീറ്റിന്റെ Share Settings 'Anyone with link' എന്ന് മാറ്റിയിട്ടുണ്ടെന്ന് ഉറപ്പുവരുത്തുക.")
-
-    st.info("💡 ഗൂഗിൾ ഷീറ്റിൽ എൻട്രികൾ ആഡ് ചെയ്താൽ ഇവിടെ തത്സമയം ഫോണിലും സിസ്റ്റത്തിലും ഒരുപോലെ കാണാൻ സാധിക്കും!")
+        st.warning("Google Sheet-ൽ നിന്ന് ഡാറ്റ കാണാൻ സാധിക്കുന്നില്ല. ഗൂഗിൾ ഷീറ്റിൽ ഡാറ്റ നൽകിയിട്ടുണ്ടെന്ന് ഉറപ്പുവരുത്തുക.")
